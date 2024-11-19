@@ -6,12 +6,12 @@ class HTMLNode():
         self.props = props
 
     def to_html(self):
-        raise NotImplementedError()
+        raise NotImplementedError
 
     def props_to_html(self):
         res = ''
         for k,v in self.props.items():
-            res = res + f" {k}:\"{v}\""
+            res = res + f" {k}=\"{v}\""
         return res
 
     def __repr__(self):
