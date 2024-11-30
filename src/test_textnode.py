@@ -1,7 +1,6 @@
 import unittest
 
-from textnode import TextNode, TextType
-from textnode import text_node_to_html_node, split_nodes_delimiter
+from textnode import *
 from leafnode import *
 
 class TestTextNode(unittest.TestCase):
@@ -80,5 +79,35 @@ class TestTextNode(unittest.TestCase):
              TextNode(" and *italic* word", TextType.TEXT)
              ]
         self.assertEqual(new_nodes, res_arr)
+
+
+    def test_split_link_node(self):
+        node = TextNode(
+            "This is text with a link [to boot dev](https://www.boot.dev) and [to youtube](https://www.youtube.com/@bootdotdev)",
+            TextType.TEXT,
+            )
+        ans = split_nodes_link([node])
+        res_arr = [
+            TextNode("This is a text with a link ", TextType.TEXT),
+            TextNode("to boot dev", TextType.LINK, "https://www.boot.dev"),
+            TextNode(" and ", TextType.TEXT),
+            TextNode("to youtube", TextType.LINK, "https://www.youtube.com")
+        ]
+        self.assertEqual(ans, res_arr)
+
+    def test_split_image_node(self):
+        node = TextNode(
+            "This is text with an image link ![pikachu](https://www.serebii.net/pikachu) also foxes are cool!", TextType.TEXT,
+            )
+        ans = split_nodes_image([node])
+        res_arr = [
+            TextNode("This is a text with an image link ", TextType.TEXT),
+            TextNode("pikachu", TextType.IMAGE, "https://www.serebii.net/pikachu"),
+            TextNode(" also foxes are cool!", TextType.TEXT)
+        ]
+        self.assertEqual(ans, res_arr)
+        
+
+
 if __name__ == "__main__":
     unittest.main()

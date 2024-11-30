@@ -1,5 +1,6 @@
 from enum import Enum
 from leafnode import *
+from extract import *
 
 class TextType(Enum):
     NORMAL = "normal"
@@ -61,3 +62,51 @@ def split_nodes_delimiter(old_nodes, delimiter, text_type):
                     temp_node = TextNode(text=temp_text[i], text_type=TextType.TEXT, url=None)
                 new_nodes.append(temp_node)
     return new_nodes
+
+
+def split_nodes_image(nodes):
+    res = []
+    for node in nodes:
+        txt = node.text
+        alts_n_urls = extract_markdown_images(txt)
+        if len(alts_n_urls) < 1:
+            return [nodes]
+        image_alt = alts_n_urls[0][0]
+        image_url = alts_n_urls[0][1]
+        sections = txt.split(f"![{image_alt}]({image_url})", 1)
+        print(sections)
+        if len(sections[0]) > 0:
+            res.append(TextNode(sections[0], TextType.TEXT))
+        res.append(TextNode(image_alt, TextType.IMAGE, image_url))
+        if len(sections[1]) > 0:
+            extra_node = TextNode(sections[1], TextType.TEXT)
+            extra_res = split_nodes_image([extra_node])
+            res = res + extra_res
+            
+    return res
+
+def split_nodes_link(nodes):
+    res = []
+    for node in nodes:
+        txt = node.text
+        alts_n_urls = extract_markdown_links(txt)
+        if len(alts_n_urls) < 1:
+            return [nodes]
+        image_alt = alts_n_urls[0][0]
+        image_url = alts_n_urls[0][1]
+        sections = txt.split(f"[{image_alt}]({image_url})", 1)
+        if len(sections[0]) > 0:
+            res.append(TextNode(sections[0], TextType.TEXT))
+        res.append(TextNode(image_alt, TextType.LINK, image_url))
+        if len(sections[1]) > 0:
+            extra_node = TextNode(sections[1], TextType.TEXT)
+            extra_res = split_nodes_link([extra_node])
+            res = res + extra_res
+
+    return res
+
+node = TextNode(
+            "This is text with an image link ![pikachu](https://www.serebii.net/pikachu) also foxes are cool!", TextType.TEXT,
+            )
+ans = split_nodes_link([node])
+print(ans)

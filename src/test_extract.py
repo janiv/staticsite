@@ -8,6 +8,12 @@ class TestExtract(unittest.TestCase):
         result = [("rick roll", "https://i.imgur.com/aKaOqIh.gif"), ("obi wan", "https://i.imgur.com/fJRm4Vk.jpeg")]
         self.assertEqual(extract_markdown_images(text), result)
 
+    def test_extract_markdown_images_5(self):
+        text = """This is text with a ![rick roll](https://i.imgur.com/aKaOqIh.gif) and ![obi wan](https://i.imgur.com/fJRm4Vk.jpeg)
+        it also has ![drumroll](https://youtube.com/drumroll) and ![reddit_logo](https://reddit.com/logo)."""
+        result = [("rick roll", "https://i.imgur.com/aKaOqIh.gif"), ("obi wan", "https://i.imgur.com/fJRm4Vk.jpeg"),
+                  ("drumroll", "https://youtube.com/drumroll"), ("reddit_logo", "https://reddit.com/logo")]
+        self.assertEqual(extract_markdown_images(text), result)
 
     def test_extract_markdown_images_2(self):
         text = "This is text with a ![rick roll](https://i.imgur.com/aKaOqIh.gif)"
