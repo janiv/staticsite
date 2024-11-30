@@ -88,10 +88,10 @@ class TestTextNode(unittest.TestCase):
             )
         ans = split_nodes_link([node])
         res_arr = [
-            TextNode("This is a text with a link ", TextType.TEXT),
+            TextNode("This is text with a link ", TextType.TEXT),
             TextNode("to boot dev", TextType.LINK, "https://www.boot.dev"),
             TextNode(" and ", TextType.TEXT),
-            TextNode("to youtube", TextType.LINK, "https://www.youtube.com")
+            TextNode("to youtube", TextType.LINK, "https://www.youtube.com/@bootdotdev")
         ]
         self.assertEqual(ans, res_arr)
 
@@ -101,7 +101,7 @@ class TestTextNode(unittest.TestCase):
             )
         ans = split_nodes_image([node])
         res_arr = [
-            TextNode("This is a text with an image link ", TextType.TEXT),
+            TextNode("This is text with an image link ", TextType.TEXT),
             TextNode("pikachu", TextType.IMAGE, "https://www.serebii.net/pikachu"),
             TextNode(" also foxes are cool!", TextType.TEXT)
         ]

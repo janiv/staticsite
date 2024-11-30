@@ -70,11 +70,10 @@ def split_nodes_image(nodes):
         txt = node.text
         alts_n_urls = extract_markdown_images(txt)
         if len(alts_n_urls) < 1:
-            return [nodes]
+            return nodes
         image_alt = alts_n_urls[0][0]
         image_url = alts_n_urls[0][1]
         sections = txt.split(f"![{image_alt}]({image_url})", 1)
-        print(sections)
         if len(sections[0]) > 0:
             res.append(TextNode(sections[0], TextType.TEXT))
         res.append(TextNode(image_alt, TextType.IMAGE, image_url))
@@ -91,7 +90,7 @@ def split_nodes_link(nodes):
         txt = node.text
         alts_n_urls = extract_markdown_links(txt)
         if len(alts_n_urls) < 1:
-            return [nodes]
+            return nodes
         image_alt = alts_n_urls[0][0]
         image_url = alts_n_urls[0][1]
         sections = txt.split(f"[{image_alt}]({image_url})", 1)
@@ -104,9 +103,3 @@ def split_nodes_link(nodes):
             res = res + extra_res
 
     return res
-
-node = TextNode(
-            "This is text with an image link ![pikachu](https://www.serebii.net/pikachu) also foxes are cool!", TextType.TEXT,
-            )
-ans = split_nodes_link([node])
-print(ans)
