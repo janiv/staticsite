@@ -53,10 +53,13 @@ def split_nodes_delimiter(old_nodes, delimiter, text_type):
             new_nodes.append(node)
         else:
             temp_text = node.text.split(delimiter)
+            if (len(temp_text) <= 1):
+                new_nodes.append(node)
+                continue
             for i in range(0, len(temp_text)):
                 if not temp_text[i]:
                     continue
-                if i == 1:
+                if temp_text[i][-1] != " " and temp_text[i][0] != " ":
                     temp_node = TextNode(text=temp_text[i], text_type=text_type, url=None)
                 else:
                     temp_node = TextNode(text=temp_text[i], text_type=TextType.TEXT, url=None)
@@ -70,7 +73,8 @@ def split_nodes_image(nodes):
         txt = node.text
         alts_n_urls = extract_markdown_images(txt)
         if len(alts_n_urls) < 1:
-            return nodes
+            res.append(node)
+            continue
         image_alt = alts_n_urls[0][0]
         image_url = alts_n_urls[0][1]
         sections = txt.split(f"![{image_alt}]({image_url})", 1)
@@ -90,16 +94,29 @@ def split_nodes_link(nodes):
         txt = node.text
         alts_n_urls = extract_markdown_links(txt)
         if len(alts_n_urls) < 1:
-            return nodes
-        image_alt = alts_n_urls[0][0]
-        image_url = alts_n_urls[0][1]
-        sections = txt.split(f"[{image_alt}]({image_url})", 1)
+            res.append(node)
+            continue
+        link_text = alts_n_urls[0][0]
+        url = alts_n_urls[0][1]
+        sections = txt.split(f"[{link_text}]({url})", 1)
         if len(sections[0]) > 0:
             res.append(TextNode(sections[0], TextType.TEXT))
-        res.append(TextNode(image_alt, TextType.LINK, image_url))
+        res.append(TextNode(link_text, TextType.LINK, url))
         if len(sections[1]) > 0:
             extra_node = TextNode(sections[1], TextType.TEXT)
             extra_res = split_nodes_link([extra_node])
             res = res + extra_res
 
+    return res
+
+
+def text_to_textnodes(text):
+    res = []
+    currNode = TextNode(text, TextType.TEXT)
+    ttypes = [('`', TextType.CODE), ("**", TextType.BOLD), ("*", TextType.ITALIC)]
+    res.append(currNode)
+    res = split_nodes_image(res)
+    res = split_nodes_link(res)
+    for pair in ttypes:
+        res = split_nodes_delimiter(res, pair[0], pair[1])
     return res

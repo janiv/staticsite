@@ -106,8 +106,36 @@ class TestTextNode(unittest.TestCase):
             TextNode(" also foxes are cool!", TextType.TEXT)
         ]
         self.assertEqual(ans, res_arr)
-        
 
+    def test_text_to_textnodes(self):
+        text  = "This is **text** with an *italic* word and a `code block` and an ![obi wan image](https://i.imgur.com/fJRm4Vk.jpeg) and a [link](https://boot.dev)"
+        res_arr = [
+            TextNode("This is ", TextType.TEXT),
+            TextNode("text", TextType.BOLD),
+            TextNode(" with an ", TextType.TEXT),
+            TextNode("italic", TextType.ITALIC),
+            TextNode(" word and a ", TextType.TEXT),
+            TextNode("code block", TextType.CODE),
+            TextNode(" and an ", TextType.TEXT),
+            TextNode("obi wan image", TextType.IMAGE, "https://i.imgur.com/fJRm4Vk.jpeg"),
+            TextNode(" and a ", TextType.TEXT),
+            TextNode("link", TextType.LINK, "https://boot.dev"),
+        ]
+        ans = text_to_textnodes(text)
+        self.assertEqual(ans, res_arr)
+        
+    def test_text_to_textnodes2(self):
+        text = "This is **text** followed by *an italic phrase* and then some **more shouting**"
+        res_arr = [
+            TextNode("This is ", TextType.TEXT),
+            TextNode("text", TextType.BOLD),
+            TextNode(" followed by ", TextType.TEXT),
+            TextNode("an italic phrase", TextType.ITALIC),
+            TextNode(" and then some ", TextType.TEXT),
+            TextNode("more shouting", TextType.BOLD),
+        ]
+        ans = text_to_textnodes(text)
+        self.assertEqual(ans, res_arr)
 
 if __name__ == "__main__":
     unittest.main()
