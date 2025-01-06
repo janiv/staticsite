@@ -11,21 +11,48 @@ def markdown_to_html_node(markdown):
         if block_type == "heading":
             pound_count = count_pounds(block)
             h_type = heading_type(pound_count)
-            new_node = HTMLNode(tag=h_type, value=block)
+            h_val = strip_pounds(block, pound_count)
+            new_node = HTMLNode(tag=h_type, value=h_val)
             html_children.append(new_node)
         if block_type == "code":
-            return 2
+            code_node = HTMLNode(tag="code", value=block, children=None, props=None)
+            pre_node = HTMLNode(tag="pre", value=None, children=code_node, props=None)
+            html_children.append(pre_node)
         if block_type == "quote":
-            return 3
+            quote_node = HTMLNode(tag="blockquote", value=block, children=None, prop=None)
+            html_children.append(quote_node)
         if block_type == "unordered list":
-            return 4
+            list_nodes = []
+            split_text = block.split('\n')
+            split_text = strip_unordered_list(split_text)
+            for line in split_text:
+                node = HTMLNode(tag="li", value=line)
+                list_nodes.append(node)            
+            list_node = HTMLNode(tag="ul", value=None, children=list_nodes)
+            html_children.append(list_node)
         if block_type == "ordered list":
             return 5
         if block_type == "normal":
             return 6
 
-
+    parent.children=html_children
     return parent
+
+def strip_number(text_as_list):
+    res = []
+    for line in text_as_list:
+        period_and_space = line.find('. ')
+        line = line[period_and_space+2:]
+        res.append(line)
+    return res
+
+def strip_unordered_list(text_as_list):
+    res = []
+    for line in text_as_list:
+        space = line.find(' ')
+        line = line[space+1:]
+        res.append(line)
+    return res
 
 
 def count_pounds(text):
@@ -37,6 +64,12 @@ def count_pounds(text):
         return match_string.count('#')
     else:
         raise ValueError(f"This is supposed to be called on a header not {text}")
+
+
+def strip_pounds(text, count):
+    # Count+1 to strip all pounds and leading space
+    return text[count+1:]
+
 
 def heading_type(count):
     if count == 1:
@@ -51,7 +84,7 @@ def heading_type(count):
         return "h5"
     if count == 6:
         return "h6"
-    raise ValueError(f"Your count of {count} is not acceptable")
+    raise ValueError(f"Your # count of {count} is not acceptable")
 
 def text_to_children(text):
     nodes = text_to_textnodes(text)
