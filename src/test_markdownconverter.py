@@ -32,3 +32,15 @@ class TestMarkDownConverter(unittest.TestCase):
         text = "####### Broken"
         with self.assertRaises(ValueError):
             count_pounds(text)
+
+    def test_heading_type(self):
+        text = "# H1 Heading"
+        res = "h1"
+        ans = heading_type(count_pounds(text))
+        self.assertEqual(res, ans)
+
+    def test_markdown_to_html_node(self):
+        text = "# This document has little\n\n But that's okay"
+        res="HTMLNode Object (div, None, [HTMLNode Object (h1, This document has little, None, None), HTMLNode Object (p, None, [HTMLNode Object (None, But that's okay, None, None)], None)], None)"
+        ans = markdown_to_html_node(text)
+        self.assertEqual(res, repr(ans))

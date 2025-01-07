@@ -31,10 +31,18 @@ def markdown_to_html_node(markdown):
             list_node = HTMLNode(tag="ul", value=None, children=list_nodes)
             html_children.append(list_node)
         if block_type == "ordered list":
-            return 5
+            list_nodes = []
+            split_text = block.split('\n')
+            split_text = strip_number(split_text)
+            for line in split_text:
+                node = HTMLNode(tag="li", value=line)
+                list_nodes.append(node)
+            list_node = HTMLNode(tag="ol", value=None, children=list_nodes)
+            html_children.append(list_node)
         if block_type == "normal":
-            return 6
-
+            nodes = text_to_children(block)
+            p_node = HTMLNode(tag="p", value=None, children=nodes)
+            html_children.append(p_node)
     parent.children=html_children
     return parent
 
@@ -93,3 +101,5 @@ def text_to_children(text):
         htmled_node = text_node_to_html_node(node)
         html_nodes.append(htmled_node)
     return html_nodes
+
+
