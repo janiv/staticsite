@@ -5,6 +5,7 @@ import shutil
 def main():
     cwd = os.path.dirname(os.getcwd())
     source = os.path.join(cwd, "static")
+    print(source)
     dest = os.path.join(cwd, "public")
     content_mover(source, dest, 0)
 
