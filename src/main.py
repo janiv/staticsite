@@ -4,9 +4,10 @@ import shutil
 
 def main():
     cwd = os.path.dirname(os.getcwd())
-    source = os.path.join(cwd, "static")
+    source = os.path.join(cwd, "staticsite/static")
+    print(cwd)
     print(source)
-    dest = os.path.join(cwd, "public")
+    dest = os.path.join(cwd, "staticsite/public")
     content_mover(source, dest, 0)
 
 
