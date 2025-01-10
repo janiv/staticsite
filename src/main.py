@@ -1,4 +1,5 @@
 from textnode import *
+from markdownconverter import *
 import os
 import shutil
 
@@ -30,7 +31,27 @@ def content_mover(source, destination, status):
         else:
             #We found a file, we can copy it to the destination
             shutil.copy(curr, destination) 
+
+def generate_page(from_path, template_path, dest_path):
+    print(f"Generating page from {from_path} to {dest_path} using {template_path}")
     
+    markdown_file = open(from_path, "r")
+    markdown = markdown_file.read()
+    markdown_file.close()
+
+    template_file = open(template_path, "r")
+    template = template_file.read()
+    template_file.close()
+
+    title_string = extract_title(markdown)
+    html = markdown_to_html_node(markdown)
+    html_string = html.to_html()
+
+    template.replace("{{{{ Title }}}}", title_string)
+    template.replace("{{{{ Content }}}}", html_string)
+
+
+
 def delete_dest(destination):
     shutil.rmtree(destination)
 

@@ -34,3 +34,20 @@ class TestExtract(unittest.TestCase):
         text = "This is text with a link [to boot dev](https://www.boot.dev) and [to youtube](https://www.youtube.com/@bootdotdev)"
         result =[("to boot dev", "https://www.boot.dev"), ("to youtube", "https://www.youtube.com/@bootdotdev")]
         self.assertEqual(extract_markdown_links(text), result)
+
+    def test_extract_title_1(self):
+        text = "# This is a title\n## This is an h2"
+        res = "This is a title"
+        self.assertEqual(extract_title(text), res)
+    
+    def test_extract_title_2(self):
+        text = "## This is a title\n## This is an h2"
+        res = "Missing h1 tag"
+        with self.assertRaises(Exception) as context:
+            extract_title(text)
+            self.assertTrue('Missing h1 tag' in str(context.exception))
+
+    def test_extract_title_hello(self):
+        text = "# Hello"
+        res = "Hello"
+        self.assertEqual(extract_title(text), res)
