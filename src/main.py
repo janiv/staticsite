@@ -10,7 +10,9 @@ def main():
     print(source)
     dest = os.path.join(cwd, "staticsite/public")
     content_mover(source, dest, 0)
-
+    from_path = os.path.join(cwd, "staticsite/content/index.md")
+    template_path = os.path.join(cwd, "staticsite/template.html")
+    generate_page(from_path, template_path, dest)
 
 def content_mover(source, destination, status):
     #First we delete, I am cheating and using an int
@@ -34,7 +36,8 @@ def content_mover(source, destination, status):
 
 def generate_page(from_path, template_path, dest_path):
     print(f"Generating page from {from_path} to {dest_path} using {template_path}")
-    
+    if not os.path.exists(dest_path):
+        os.mkdir(dest_path)
     markdown_file = open(from_path, "r")
     markdown = markdown_file.read()
     markdown_file.close()
@@ -47,8 +50,14 @@ def generate_page(from_path, template_path, dest_path):
     html = markdown_to_html_node(markdown)
     html_string = html.to_html()
 
-    template.replace("{{{{ Title }}}}", title_string)
-    template.replace("{{{{ Content }}}}", html_string)
+    template =template.replace("{{ Title }}", title_string)
+    template =template.replace("{{ Content }}", html_string)
+
+    dest_path = os.path.join(dest_path, "index.html")
+    destination = open(dest_path, "w")
+    destination.write(template)
+    destination.close()
+
 
 
 

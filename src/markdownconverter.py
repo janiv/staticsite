@@ -1,9 +1,10 @@
 from htmlnode import *
 from blocks import *
 from textnode import *
+from parentnode import *
 
 def markdown_to_html_node(markdown):
-    parent = HTMLNode(tag="div", value=None, children=None, props = None)
+    parent = ParentNode(tag="div", children=None, props = None)
     html_children = []
     blocks = markdown_to_blocks(markdown)
     for block in blocks:
@@ -12,36 +13,47 @@ def markdown_to_html_node(markdown):
             pound_count = count_pounds(block)
             h_type = heading_type(pound_count)
             h_val = strip_pounds(block, pound_count)
-            new_node = HTMLNode(tag=h_type, value=h_val)
+            new_node = LeafNode(tag=h_type, value=h_val)
             html_children.append(new_node)
         if block_type == "code":
-            code_node = HTMLNode(tag="code", value=block, children=None, props=None)
-            pre_node = HTMLNode(tag="pre", value=None, children=code_node, props=None)
+            code_node = LeafNode(tag="code", value=block, children=None, props=None)
+            pre_node = ParentNode(tag="pre" , children=code_node, props=None)
             html_children.append(pre_node)
         if block_type == "quote":
-            quote_node = HTMLNode(tag="blockquote", value=block, children=None, prop=None)
+            q_val = strip_quote_block(block)
+            quote_node = LeafNode(tag="blockquote", value=q_val)
             html_children.append(quote_node)
         if block_type == "unordered list":
             list_nodes = []
             split_text = block.split('\n')
             split_text = strip_unordered_list(split_text)
             for line in split_text:
-                node = HTMLNode(tag="li", value=line)
+                text_nodes=  text_to_textnodes(line)
+                kiddos = []
+                for tn in text_nodes:
+                    leaf = text_node_to_html_node(tn)
+                    kiddos.append(leaf)
+                node = ParentNode(tag="li", children=kiddos)
                 list_nodes.append(node)            
-            list_node = HTMLNode(tag="ul", value=None, children=list_nodes)
+            list_node = ParentNode(tag="ul", children=list_nodes)
             html_children.append(list_node)
         if block_type == "ordered list":
             list_nodes = []
             split_text = block.split('\n')
             split_text = strip_number(split_text)
             for line in split_text:
-                node = HTMLNode(tag="li", value=line)
+                text_nodes=  text_to_textnodes(line)
+                kiddos = []
+                for tn in text_nodes:
+                    leaf = text_node_to_html_node(tn)
+                    kiddos.append(leaf)
+                node = ParentNode(tag="li", children=kiddos)
                 list_nodes.append(node)
-            list_node = HTMLNode(tag="ol", value=None, children=list_nodes)
+            list_node = ParentNode(tag="ol", children=list_nodes)
             html_children.append(list_node)
         if block_type == "normal":
             nodes = text_to_children(block)
-            p_node = HTMLNode(tag="p", value=None, children=nodes)
+            p_node = ParentNode(tag="p", children=nodes)
             html_children.append(p_node)
     parent.children=html_children
     return parent
@@ -72,6 +84,9 @@ def count_pounds(text):
         return match_string.count('#')
     else:
         raise ValueError(f"This is supposed to be called on a header not {text}")
+
+def strip_quote_block(text):
+    return text[1:].strip()
 
 
 def strip_pounds(text, count):
