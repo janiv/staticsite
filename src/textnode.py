@@ -42,7 +42,7 @@ def text_node_to_html_node(text_node):
         case TextType.LINK:
             return LeafNode(tag="a", value=text_node.text, props= {"href": text_node.url})
         case TextType.IMAGE:
-            return LeafNode(tag="img", value=None, props={"src":text_node.url, "alt":text_node.text})
+            return LeafNode(tag="img", value="", props={"src":text_node.url, "alt":text_node.text})
         case __:
             raise Exception("Incompatible text type")
 
@@ -59,7 +59,7 @@ def split_nodes_delimiter(old_nodes, delimiter, text_type):
             for i in range(0, len(temp_text)):
                 if not temp_text[i]:
                     continue
-                if temp_text[i][-1] != " " and temp_text[i][0] != " ":
+                if i%2 != 0:
                     temp_node = TextNode(text=temp_text[i], text_type=text_type, url=None)
                 else:
                     temp_node = TextNode(text=temp_text[i], text_type=TextType.TEXT, url=None)

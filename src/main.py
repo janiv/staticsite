@@ -2,6 +2,7 @@ from textnode import *
 from markdownconverter import *
 import os
 import shutil
+import pathlib
 
 def main():
     cwd = os.path.dirname(os.getcwd())
@@ -10,9 +11,9 @@ def main():
     print(source)
     dest = os.path.join(cwd, "staticsite/public")
     content_mover(source, dest, 0)
-    from_path = os.path.join(cwd, "staticsite/content/index.md")
+    from_path = os.path.join(cwd, "staticsite/content")
     template_path = os.path.join(cwd, "staticsite/template.html")
-    generate_page(from_path, template_path, dest)
+    generate_page_recursive(from_path, template_path, dest)
 
 def content_mover(source, destination, status):
     #First we delete, I am cheating and using an int
@@ -59,6 +60,18 @@ def generate_page(from_path, template_path, dest_path):
     destination.close()
 
 
+def generate_page_recursive(dir_path_content, template_path, dest_dir_path):
+    dir_content = os.listdir(dir_path_content)
+    for dc in dir_content:
+        dc_val = os.path.join(dir_path_content, dc)
+        if os.path.isfile(dc_val):
+            generate_page(dc_val, template_path, dest_dir_path)
+        else:
+            # We have found a folder, we would like to write to public/{found_folder}
+            dest = os.path.join(dest_dir_path, dc)
+            generate_page_recursive(dc_val, template_path, dest)
+            
+        
 
 
 def delete_dest(destination):
